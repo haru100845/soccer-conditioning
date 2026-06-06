@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コンディショニングサポート</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:       #017A8A;
+    --teal-dark:  #015E6B;
+    --teal-light: #E4F3F5;
+    --orange:     #E07B39;
+    --green:      #27AE60;
+    --red:        #C0392B;
+    --dark:       #162428;
+    --gray:       #5F7B85;
+    --light:      #F7FAFB;
+    --white:      #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--light);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* ── ヘッダー ── */
+  .site-header {
+    background: var(--teal);
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .site-header h1 {
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .site-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  /* ── タブナビ ── */
+  .tab-nav {
+    display: flex;
+    background: var(--teal-dark);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.65);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active {
+    color: var(--white);
+    border-bottom-color: #00E5D4;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* ── コンテンツ ── */
+  .tab-content { display: none; padding: 20px 16px 40px; }
+  .tab-content.active { display: block; }
+
+  /* ── セクションヘッダー ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .section-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .section-title h2 {
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  /* ── カード ── */
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--teal);
+  }
+  .card.orange { border-left-color: var(--orange); }
+  .card.green  { border-left-color: var(--green); }
+  .card.red    { border-left-color: var(--red); }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-label.teal   { color: var(--teal); }
+  .card-label.orange { color: var(--orange); }
+  .card-label.green  { color: var(--green); }
+  .card-label.red    { color: var(--red); }
+
+  .card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--dark);
+  }
+
+  /* ── ステップ ── */
+  .steps { display: flex; flex-direction: column; gap: 8px; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--light);
+    border-radius: 10px;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .step-text { flex: 1; }
+  .step-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .step-text span {
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* ── 矢印 ── */
+  .arrow {
+    text-align: center;
+    color: var(--gray);
+    font-size: 18px;
+    margin: -2px 0;
+  }
+
+  /* ── インフォグリッド ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .info-item {
+    background: var(--light);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .info-item .info-val {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--teal);
+    line-height: 1;
+  }
+  .info-item .info-val.orange { color: var(--orange); }
+  .info-item .info-label {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* ── 環境カード ── */
+  .env-card {
+    background: var(--light);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .env-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .env-badge {
+    background: var(--teal);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .env-badge.orange { background: var(--orange); }
+  .env-badge.green  { background: var(--green); }
+  .env-card-header span {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* ── 注意事項 ── */
+  .notice {
+    background: #FEF0E7;
+    border: 1px solid var(--orange);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 4px;
+  }
+  .notice-title {
+    color: var(--orange);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .notice ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .notice ul li {
+    font-size: 13px;
+    color: var(--dark);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .notice ul li::before {
+    content: "・";
+    position: absolute;
+    left: 0;
+    color: var(--orange);
+  }
+
+  /* ── 出典 ── */
+  .source {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #E0E9EB;
+    line-height: 1.6;
+  }
+
+  /* ── ストレッチ部位カード ── */
+  .stretch-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .stretch-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--teal-light);
+  }
+  .stretch-emoji {
+    font-size: 28px;
+  }
+  .stretch-header-text h3 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .stretch-header-text p {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+  .stretch-how {
+    background: var(--teal-light);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--dark);
+  }
+  .stretch-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--teal);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  /* ── タイミングバナー ── */
+  .timing-banner {
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .timing-banner .t-icon { font-size: 32px; }
+  .timing-banner h3 { font-size: 15px; font-weight: 700; }
+  .timing-banner p  { font-size: 13px; opacity: 0.85; margin-top: 3px; line-height: 1.5; }
+
+  /* ── 動画リスト ── */
+  .video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .video-item {
+    background: var(--light);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .video-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .video-emoji {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .video-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+  }
+  .video-sub {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+  .video-btn {
+    display: block;
+    background: var(--teal);
+    color: var(--white);
+    text-decoration: none;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .video-btn:active { opacity: 0.8; }
+
+  /* ── フッター ── */
+  .footer {
+    background: var(--teal-dark);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 20px 16px;
+    font-size: 11px;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="site-header">
+  <h1>🏃 コンディショニングサポート</h1>
+  <p>サッカー部活生向け　セルフケアガイド</p>
+</header>
+
+<!-- タブナビ -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('bath')">🏊 交代浴</button>
+  <button class="tab-btn" onclick="showTab('stretch')">🧘 ストレッチ</button>
+</nav>
+
+<!-- ══════════════════════════════════════
+     交代浴タブ
+══════════════════════════════════════ -->
+<div id="tab-bath" class="tab-content active">
+
+  <!-- タイミング -->
+  <div class="timing-banner">
+    <div class="t-icon">🕙</div>
+    <div>
+      <h3>実施タイミング</h3>
+      <p>帰宅後・就寝前にできるだけ早めに実施<br>練習後の疲労回復に効果的です</p>
+    </div>
+  </div>
+
+  <!-- 基本情報 -->
+  <div class="card">
+    <div class="card-label teal">⚡ 基本情報</div>
+    <h3>交代浴（コントラストバス）とは</h3>
+    <p style="font-size:13px;line-height:1.7;color:#444;">
+      冷水と温水に交互につかることで血管の収縮・拡張を繰り返し、
+      血流を促進させてリカバリーを早める方法です。
+      疲労が高いときや試合が近いときに特に効果的です。
+    </p>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-val">3〜5</div>
+        <div class="info-label">セット数</div>
+      </div>
+      <div class="info-item">
+        <div class="info-val orange">6〜20</div>
+        <div class="info-label">合計時間（分）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 基本の流れ -->
+  <div class="card">
+    <div class="card-label teal">🔄 基本の流れ</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:var(--teal);">冷</div>
+        <div class="step-text">
+          <strong>冷水　1〜2分</strong>
+          <span>10〜20℃　できるだけ冷たく</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="step-num" style="background:var(--orange);">温</div>
+        <div class="step-text">
+          <strong>温水　1〜2分</strong>
+          <span>36〜40℃　気持ち良い温度で</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <div class="step-num" style="background:var(--gray);">✕</div>
+        <div class="step-text">
+          <strong>3〜5セット繰り返す</strong>
+          <span>最後は冷水で終わる</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 環境別方法 -->
+  <div class="card">
+    <div class="card-label teal">🏠 環境に合わせた方法</div>
+
+    <!-- 浴槽＋シャワー -->
+    <div class="env-card">
+      <div class="env-card-header">
+        <span class="env-badge">おすすめ</span>
+        <span>① 浴槽＋シャワーで行う場合</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:var(--teal);font-size:11px;">冷</div>
+          <div class="step-text">
+            <strong>冷水シャワー　1〜2分</strong>
+            <span>できるだけ冷たく・全身に当てる</span>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <div class="step-num" style="background:var(--orange);font-size:11px;">温</div>
+          <div class="step-text">
+            <strong>温水浴槽　1〜2分</strong>
+            <span>36〜40℃・肩までつかる</span>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <div class="step-num" style="background:var(--gray);font-size:11px;">繰</div>
+          <div class="step-text">
+            <strong>3〜5セット繰り返す</strong>
+            <span>最後は冷水で終わる</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- シャワーのみ -->
+    <div class="env-card">
+      <div class="env-card-header">
+        <span class="env-badge orange">代替①</span>
+        <span>② シャワーのみの場合</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:var(--teal);font-size:11px;">冷</div>
+          <div class="step-text">
+            <strong>冷水シャワー　1〜2分</strong>
+            <span>できるだけ冷たく</span>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <div class="step-num" style="background:var(--orange);font-size:11px;">温</div>
+          <div class="step-text">
+            <strong>温水シャワー　1〜2分</strong>
+            <span>38〜40℃</span>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <div class="step-num" style="background:var(--gray);font-size:11px;">繰</div>
+          <div class="step-text">
+            <strong>3〜5セット繰り返す</strong>
+            <span>最後は冷水で終わる</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- バケツ -->
+    <div class="env-card">
+      <div class="env-card-header">
+        <span class="env-badge green">代替②</span>
+        <span>③ バケツで足だけ行う場合</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:var(--teal);font-size:11px;">冷</div>
+          <div class="step-text">
+            <strong>冷水バケツに足をつける　1〜2分</strong>
+            <span>10〜20℃</span>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <div class="step-num" style="background:var(--orange);font-size:11px;">温</div>
+          <div class="step-text">
+            <strong>温水バケツに足をつける　1〜2分</strong>
+            <span>36〜40℃</span>
+          </div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <div class="step-num" style="background:var(--gray);font-size:11px;">繰</div>
+          <div class="step-text">
+            <strong>3〜5セット繰り返す</strong>
+            <span>最後は冷水で終わる</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 期待される効果 -->
+  <div class="card green">
+    <div class="card-label green">✅ 期待される効果</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+      <div style="background:#E8F8EE;border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">血流促進</div>
+      <div style="background:#E8F8EE;border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">炎症抑制</div>
+      <div style="background:#E8F8EE;border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">筋肉痛軽減</div>
+      <div style="background:#E8F8EE;border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">代謝産物除去</div>
+    </div>
+  </div>
+
+  <!-- 注意事項 -->
+  <div class="notice">
+    <div class="notice-title">⚠️ 注意事項</div>
+    <ul>
+      <li>冷やしすぎに注意してください</li>
+      <li>体調不良時は実施しない</li>
+      <li>強い痛みがある場合は医療機関へ</li>
+      <li>心臓・血管系の疾患がある場合は医師に相談</li>
+    </ul>
+  </div>
+
+  <p class="source">
+    出典：HPSCトータルコンディショニングガイドライン（2023）<br>
+    独立行政法人日本スポーツ振興センター ハイパフォーマンススポーツセンター
+  </p>
+</div>
+
+<!-- ══════════════════════════════════════
+     ストレッチタブ
+══════════════════════════════════════ -->
+<div id="tab-stretch" class="tab-content">
+
+  <!-- タイミング -->
+  <div class="timing-banner">
+    <div class="t-icon">🕙</div>
+    <div>
+      <h3>実施タイミング</h3>
+      <p>帰宅後・就寝前、または交代浴の後に実施<br>各部位20〜30秒・2〜3セット</p>
+    </div>
+  </div>
+
+  <!-- まとめ動画 -->
+  <div class="card">
+    <div class="card-label teal">🎬 まずはこちらから</div>
+    <h3>ストレッチまとめ動画</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:12px;line-height:1.6;">
+      全体の流れを確認したい場合はこちら
+    </p>
+    <a href="https://youtu.be/d5iZ7DTBTt8?si=LBX_kzRTrOomAaqL"
+       target="_blank" class="video-btn" style="background:var(--teal);">
+      ▶ ストレッチまとめ動画を見る
+    </a>
+  </div>
+
+  <!-- 部位別動画 -->
+  <div class="card">
+    <div class="card-label teal">🦵 部位別ストレッチ動画</div>
+    <p style="font-size:12px;color:#666;margin-bottom:14px;">
+      気になる部位をタップして動画を確認してください
+    </p>
+
+    <div class="video-list">
+
+      <div class="video-item">
+        <div class="video-info">
+          <div class="video-emoji">🦵</div>
+          <div>
+            <div class="video-title">大腿四頭筋（太もも前）</div>
+            <div class="video-sub">キック・ダッシュで疲労しやすい部位</div>
+          </div>
+        </div>
+        <a href="https://youtu.be/YBzsZbj1I2U?si=xkRYhsDWetYhAZ8b"
+           target="_blank" class="video-btn">▶ 動画を見る</a>
+      </div>
+
+      <div class="video-item">
+        <div class="video-info">
+          <div class="video-emoji">🦵</div>
+          <div>
+            <div class="video-title">ハムストリング（太もも裏）</div>
+            <div class="video-sub">肉離れが起きやすい要注意部位</div>
+          </div>
+        </div>
+        <a href="https://youtu.be/en43lXbZU3c?si=HDdAiMaFSUawOKYv"
+           target="_blank" class="video-btn">▶ 動画を見る</a>
+      </div>
+
+      <div class="video-item">
+        <div class="video-info">
+          <div class="video-emoji">🦶</div>
+          <div>
+            <div class="video-title">ふくらはぎ</div>
+            <div class="video-sub">走行・ジャンプで酷使される部位</div>
+          </div>
+        </div>
+        <a href="https://youtu.be/O6jQEsb3fG0?si=gO2w1e5Gzm1htpeE"
+           target="_blank" class="video-btn">▶ 動画を見る</a>
+      </div>
+
+      <div class="video-item">
+        <div class="video-info">
+          <div class="video-emoji">🧘</div>
+          <div>
+            <div class="video-title">内転筋（股関節内側）</div>
+            <div class="video-sub">方向転換・サイドステップの要</div>
+          </div>
+        </div>
+        <a href="https://youtu.be/50IltT_6DII?si=FsK0hprtI2TFPaJA"
+           target="_blank" class="video-btn">▶ 動画を見る</a>
+      </div>
+
+      <div class="video-item">
+        <div class="video-info">
+          <div class="video-emoji">🏃</div>
+          <div>
+            <div class="video-title">大腿筋膜張筋（太もも外側）</div>
+            <div class="video-sub">腸脛靭帯炎の予防に重要な部位</div>
+          </div>
+        </div>
+        <a href="https://youtu.be/iyg4L4xJ2d4?si=doolarhJFtLHTZov"
+           target="_blank" class="video-btn">▶ 動画を見る</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 注意事項 -->
+  <div class="notice">
+    <div class="notice-title">⚠️ 注意事項</div>
+    <ul>
+      <li>痛みが出るまで無理に伸ばさない</li>
+      <li>呼吸を止めずリラックスして行う</li>
+      <li>反動をつけずゆっくり伸ばす</li>
+      <li>強い痛みがある場合は医療機関へ</li>
+    </ul>
+  </div>
+
+  <p class="source">
+    動画出典：ZAMST（ザムスト）公式YouTubeチャンネル<br>
+    日本シグマックス株式会社
+  </p>
+</div>
+
+<!-- フッター -->
+<footer class="footer">
+  <p>本ページは卒業研究「サッカー部活動生向けセルフコンディショニング支援システムの開発」の一環として作成されました。</p>
+  <p style="margin-top:8px;">提案メニューはHPSC・ZAMST・FIFA公式の根拠に基づいています。</p>
+</footer>
+
+<script>
+function showTab(name) {
+  // コンテンツ切り替え
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
